@@ -1,21 +1,43 @@
 # Import Packages
-import numpy as np
+# import subprocess
 import pandas as pd
-import pandas_datareader as pdr
 import yfinance as yf
 
 
-startDate = pd.to_datetime('2020-02-04')
+# with open('requirements.txt', 'w') as file_:
+#     subprocess.Popen(['pip', 'freeze', '-l'], stdout=file_).communicate()
+# print('requirements.txt saved')
 
-#tesla_df = pdr.data.get_data_yahoo('TSLA', start=startDate)
 
-msft = yf.Ticker('MSFT')
+tickers = yf.Tickers('VTSAX VTI VOO VTIAX VXUS SCHD VIG VYM DGRO VBTLX BND VTEB VTIP')
+i = 0
+divGrowthRate = pd.DataFrame()
 
-t = yf.download('VOO')
-t2 = yf.download('GOOG', group_by='tickers')
+for symbol in tickers.symbols:
+    div = tickers.tickers[symbol].dividends
 
-tickers = yf.Tickers('msft aapl goog')
+    div = div.to_frame().reset_index()
+    div['Year'] = div['Date'].dt.year
 
-nasdaqSymbols = pdr.get_nasdaq_symbols()
+    divYield = div.groupby('Year')['Dividends'].sum()
+
+    divYield = divYield.iloc[1:]
+    divYield = divYield.iloc[:-1]
+
+    divGrowth = divYield.pct_change().iloc[1:]
+
+    if i == 0:
+        divGrowthRate = pd.DataFrame({'Symbol': [symbol], 'DGR': [divGrowth.mean()]})
+    else:
+        divGrowthRate = pd.concat([divGrowthRate, pd.DataFrame({'Symbol': [symbol], 'DGR': [divGrowth.mean()]})])
+
+    i += 1
+
+
+filePath = r'C:\Users\CamHa\Downloads\Dividend Growth Rate.xlsx'
+
+with pd.ExcelWriter(filePath) as writer:
+    divGrowthRate.to_excel(writer, sheet_name='Div Growth Rate', index=False)
+
 
 print('Complete')
