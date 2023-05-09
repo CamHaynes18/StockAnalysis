@@ -2,6 +2,8 @@
 # import subprocess
 import pandas as pd
 import yfinance as yf
+import cpi
+from datetime import datetime
 
 
 # with open('requirements.txt', 'w') as file_:
@@ -23,6 +25,11 @@ for symbol in tickers.symbols:
 
     divYield = divYield.iloc[1:]
     divYield = divYield.iloc[:-1]
+    divYield = divYield.to_frame().reset_index()
+
+    cpi = cpi.series.get().to_dataframe()
+    cpi = cpi[cpi['period_type'] == 'annual']
+    cpiLastYear = cpi[cpi['year'] == datetime.now().year]['value']
 
     divGrowth = divYield.pct_change().iloc[1:]
 
