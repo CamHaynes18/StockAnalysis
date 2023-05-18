@@ -17,7 +17,7 @@ print('Started')
 mode = 2
 
 if mode == 1:
-    symbol = 'VOO'
+    symbol = 'VO'
     tickers = yf.Tickers(symbol)
     div = tickers.tickers[symbol].dividends
 
@@ -77,11 +77,13 @@ else:
     tickers = yf.Tickers(
         'VBTLX VGIT VTIAX VXUS VTEB VOHIX VTSAX VTI VFIAX VOO VIG SCHD VYM VVIAX VTV VIMAX VO VMVAX VOE '
         'VSMAX VB VSIAX VBR VGSLX')
+    # tickers = yf.Tickers(
+    #     'VVIAX VTV VIMAX VO VMVAX VOE VSMAX VB VSIAX VBR')
     i = 0
     divInfo = pd.DataFrame()
 
     for symbol in tickers.symbols:
-        print(symbol)
+        print(symbol + " - " + str(i+1) + "/" + str(len(tickers.symbols)))
         div = tickers.tickers[symbol].dividends
 
         div = div.to_frame().reset_index()
@@ -142,10 +144,10 @@ else:
 
         i += 1
 
-        filePath = r'C:\Users\CamHa\Downloads\Dividend Growth Rate - Group.xlsx'
+    filePath = r'Z:\Finances\Dividend Growth Rate - Group.xlsx'
 
-        with pd.ExcelWriter(filePath) as writer:
-            divInfo.to_excel(writer, sheet_name='Dividend Info', index=False)
+    with pd.ExcelWriter(filePath) as writer:
+        divInfo.to_excel(writer, sheet_name='Dividend Info', index=False)
 
 
 print('Complete')
