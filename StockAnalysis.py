@@ -14,12 +14,14 @@ from datetime import datetime
 print('Started')
 
 
-mode = 2
+mode = 1
 
 if mode == 1:
-    symbol = 'VO'
+    symbol = '^GSPC'
     tickers = yf.Tickers(symbol)
     div = tickers.tickers[symbol].dividends
+
+    his = tickers.tickers[symbol].history(period="max")
 
     div = div.to_frame().reset_index()
     div['Year'] = div['Date'].dt.year
